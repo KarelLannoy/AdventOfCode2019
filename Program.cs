@@ -483,7 +483,7 @@ namespace AdventOfCode2019
             var result = new List<string>();
             // Read the file and display it line by line.  
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"c:\temp\AdventOfCode2019\" + fileName);
+                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
             while ((line = file.ReadLine()) != null)
             {
                 result.Add(line);
@@ -498,7 +498,7 @@ namespace AdventOfCode2019
         {
             var result = new List<T>();
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"c:\temp\AdventOfCode2019\" + fileName);
+                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
             var text = file.ReadToEnd();
 
             file.Close();
@@ -514,7 +514,7 @@ namespace AdventOfCode2019
             var result = new List<List<string>>();
             // Read the file and display it line by line.  
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"c:\temp\AdventOfCode2019\" + fileName);
+                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
 
             while ((line = file.ReadLine()) != null)
             {
