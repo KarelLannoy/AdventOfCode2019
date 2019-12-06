@@ -405,20 +405,14 @@ namespace AdventOfCode2019
         {
             var diction = new Dictionary<string, List<string>>();
             List<OrbitObject> orbits = new List<OrbitObject>();
+            orbits.Add(new OrbitObject() { Name = "COM" });
             foreach (var orbit in input)
             {
                 var orbitted = orbit.Split(")", StringSplitOptions.RemoveEmptyEntries)[0];
                 var orbittie = orbit.Split(")", StringSplitOptions.RemoveEmptyEntries)[1];
-
-                if (!orbits.Any(o => o.Name == orbitted))
-                    orbits.Add(new OrbitObject() { Name = orbitted });
-
-                if (!orbits.Any(o => o.Name == orbittie))
-                    orbits.Add(new OrbitObject() { Name = orbittie, Orbits = orbitted });
-                else
-                    orbits.First(o => o.Name == orbittie).Orbits = orbitted;
+                orbits.Add(new OrbitObject() { Name = orbittie, Orbits = orbitted });
             }
-
+            
             //Find StartPoint
             var start = orbits.First(o => o.Name == "COM");
             FindWhoOrbitsThis(start, orbits);
@@ -429,18 +423,12 @@ namespace AdventOfCode2019
         {
             var diction = new Dictionary<string, List<string>>();
             List<OrbitObject> orbits = new List<OrbitObject>();
+            orbits.Add(new OrbitObject() { Name = "COM" });
             foreach (var orbit in input)
             {
                 var orbitted = orbit.Split(")", StringSplitOptions.RemoveEmptyEntries)[0];
                 var orbittie = orbit.Split(")", StringSplitOptions.RemoveEmptyEntries)[1];
-
-                if (!orbits.Any(o => o.Name == orbitted))
-                    orbits.Add(new OrbitObject() { Name = orbitted });
-
-                if (!orbits.Any(o => o.Name == orbittie))
-                    orbits.Add(new OrbitObject() { Name = orbittie, Orbits = orbitted });
-                else
-                    orbits.First(o => o.Name == orbittie).Orbits = orbitted;
+                orbits.Add(new OrbitObject() { Name = orbittie, Orbits = orbitted });
             }
 
             //Find StartPoint
@@ -485,7 +473,6 @@ namespace AdventOfCode2019
             public string Name { get; set; }
             public string Orbits { get; set; }
             public List<string> InderectlyOrbits { get; set; }
-
         }
 
         #endregion
