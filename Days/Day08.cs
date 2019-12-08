@@ -71,7 +71,7 @@ namespace AdventOfCode2019.Days
                 {
                     if (pixel == 0)
                     {
-                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.Write("O");
                     }
                     if (pixel == 1)
