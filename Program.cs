@@ -42,15 +42,43 @@ namespace AdventOfCode2019
 
 
             // Round 06
-            var input = GetInputLines("input06.txt");
-            var result1 = AdventOfCode2019_06_1(input);
-            var result2 = AdventOfCode2019_06_2(input);
-            Console.WriteLine($"{result1} - {result2}");
+            //var input = GetInputLines("input06.txt");
+            //var result1 = AdventOfCode2019_06_1(input);
+            //var result2 = AdventOfCode2019_06_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 7
+            //var input = GetInputCommaSeperated<int>("Input07.txt");
+            //var result1 = AdventOfCode2019_07_2(input);
+            //Console.WriteLine(result1);
+
+            // Round 08
+            var input = GetInputText("Input08.txt");
+            var result1 = AdventOfCode2019_08_1(input);
+            var result2 = AdventOfCode2019_08_2(input);
+            Console.WriteLine(result1);
+            foreach (var line in result2)
+            {
+                Console.WriteLine();
+                foreach (var pixel in line)
+                {
+                    if (pixel == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("O");
+                    }
+                    if (pixel == 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write("O");
+                    }
+                }
+            }
 
             Console.ReadLine();
         }
 
-        
 
         #region ROUND 01
         public static decimal AdventOfCode2019_01(List<String> input)
@@ -412,7 +440,7 @@ namespace AdventOfCode2019
                 var orbittie = orbit.Split(")", StringSplitOptions.RemoveEmptyEntries)[1];
                 orbits.Add(new OrbitObject() { Name = orbittie, Orbits = orbitted });
             }
-            
+
             //Find StartPoint
             var start = orbits.First(o => o.Name == "COM");
             FindWhoOrbitsThis(start, orbits);
@@ -477,13 +505,398 @@ namespace AdventOfCode2019
 
         #endregion
 
+
+        #region ROUND 07
+
+        private static int AdventOfCode2019_07_1(List<int> input)
+        {
+            var inputSequence = new List<int>() { 0, 1, 2, 3, 4 };
+            var permutations = GetPermutations<int>(inputSequence, 5).ToList();
+            var Outputs = new List<Tuple<List<int>, int>>();
+
+            foreach (var sequence in permutations)
+            {
+                int previousIntOutput = 0;
+                foreach (var intInput in sequence.ToList())
+                {
+                    var inputList = input.ToArray().ToList();
+                    previousIntOutput = AdventOfCode2019_07_IntCode(inputList, intInput, previousIntOutput).Last();
+                }
+                Outputs.Add(new Tuple<List<int>, int>(sequence.ToList(), previousIntOutput));
+            }
+
+            return Outputs.OrderBy(o => o.Item2).Last().Item2;
+        }
+
+        private static int AdventOfCode2019_07_2(List<int> input)
+        {
+            var inputSequence = new List<int>() { 5, 6, 7, 8, 9 };
+            var permutations = GetPermutations<int>(inputSequence, 5).ToList();
+            var Outputs = new List<Tuple<List<int>, int>>();
+
+            foreach (var sequence in permutations)
+            {
+                var done = false;
+                var listOfAmps = new List<Amplifier>()
+                {
+                    new Amplifier(){ Name = "AMP_A", IntCode = input.ToArray().ToList(), Position = 0 },
+                    new Amplifier(){ Name = "AMP_B", IntCode = input.ToArray().ToList(), Position = 0 },
+                    new Amplifier(){ Name = "AMP_C", IntCode = input.ToArray().ToList(), Position = 0 },
+                    new Amplifier(){ Name = "AMP_D", IntCode = input.ToArray().ToList(), Position = 0 },
+                    new Amplifier(){ Name = "AMP_E", IntCode = input.ToArray().ToList(), Position = 0 },
+                };
+
+                int ampIndexer = 0;
+                int previousIntOutput = 0;
+                bool firstRun = true;
+                while (!done)
+                {
+                    var amp = listOfAmps[ampIndexer];
+                    (List<int>, bool, int) output;
+                    if (firstRun)
+                    {
+                        output = AdventOfCode2019_07_2_IntCode(amp.IntCode, amp.Position, sequence.ToList()[ampIndexer], previousIntOutput);
+                    }
+                    else
+                    {
+                        output = AdventOfCode2019_07_2_IntCode(amp.IntCode, amp.Position, previousIntOutput);
+                    }
+
+
+                    if (output.Item2)
+                    {
+                        done = true;
+                    }
+                    else
+                    {
+                        previousIntOutput = output.Item1.Last();
+                        amp.Outputs.Add(output.Item1.Last());
+                    }
+                    amp.Position = output.Item3;
+
+
+                    ampIndexer++;
+                    if (ampIndexer > 4)
+                    {
+                        ampIndexer = 0;
+                        firstRun = false;
+                    }
+                }
+                Outputs.Add(new Tuple<List<int>, int>(sequence.ToList(), previousIntOutput));
+            }
+
+            return Outputs.OrderBy(o => o.Item2).Last().Item2;
+        }
+
+        public class Amplifier
+        {
+            public Amplifier()
+            {
+                Outputs = new List<int>();
+            }
+            public List<int> IntCode { get; set; }
+            public List<int> Outputs { get; set; }
+
+            public int Position { get; set; }
+
+            public string Name { get; set; }
+
+        }
+
+        static IEnumerable<IEnumerable<T>> GetPermutations<T>(IEnumerable<T> list, int length)
+        {
+            if (length == 1) return list.Select(t => new T[] { t });
+
+            return GetPermutations(list, length - 1)
+                .SelectMany(t => list.Where(e => !t.Contains(e)),
+                    (t1, t2) => t1.Concat(new T[] { t2 }));
+        }
+
+        private static List<int> AdventOfCode2019_07_IntCode(List<int> input, params int[] inputParam)
+        {
+            int paramCounter = 0;
+            var outputParams = new List<int>();
+            var position = 0;
+            while (position < input.Count)
+            {
+                var optcodeInstruction = input[position].ToString("D5");
+                var optcode = int.Parse(optcodeInstruction.Substring(optcodeInstruction.Length - 2));
+                var paramModes = new List<MemoryMode>();
+                for (int i = optcodeInstruction.Length - 3; i >= 0; i--)
+                {
+                    paramModes.Add((MemoryMode)int.Parse(optcodeInstruction[i].ToString()));
+                }
+
+                if (optcode == 99)
+                {
+                    return outputParams;
+                }
+
+                int skip = 0;
+                int val1 = 0;
+                int val2 = 0;
+                int address = 0;
+
+
+                switch (optcode)
+                {
+                    case 1:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+
+                        input[address] = val1 + val2;
+                        skip = 4;
+                        break;
+                    case 2:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+
+                        input[address] = val1 * val2;
+                        skip = 4;
+                        break;
+                    case 3:
+                        address = input[position + 1];
+                        input[address] = inputParam[paramCounter];
+                        paramCounter++;
+                        skip = 2;
+                        break;
+                    case 4:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        outputParams.Add(val1);
+                        skip = 2;
+                        break;
+                    case 5:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        if (val1 != 0)
+                        {
+                            position = val2;
+                            skip = 0;
+                        }
+                        else
+                            skip = 3;
+                        break;
+                    case 6:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        if (val1 == 0)
+                        {
+                            position = val2;
+                            skip = 0;
+                        }
+                        else
+                            skip = 3;
+                        break;
+                    case 7:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+                        input[address] = val1 < val2 ? 1 : 0;
+                        skip = 4;
+                        break;
+                    case 8:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+                        input[address] = val1 == val2 ? 1 : 0;
+                        skip = 4;
+                        break;
+                    default:
+                        break;
+                }
+                position += skip;
+            }
+            throw new Exception();
+        }
+
+        private static (List<int>, bool, int) AdventOfCode2019_07_2_IntCode(List<int> input, int position, params int[] inputParam)
+        {
+            int paramCounter = 0;
+            var outputParams = new List<int>();
+            while (position < input.Count)
+            {
+                var optcodeInstruction = input[position].ToString("D5");
+                var optcode = int.Parse(optcodeInstruction.Substring(optcodeInstruction.Length - 2));
+                var paramModes = new List<MemoryMode>();
+                for (int i = optcodeInstruction.Length - 3; i >= 0; i--)
+                {
+                    paramModes.Add((MemoryMode)int.Parse(optcodeInstruction[i].ToString()));
+                }
+
+                if (optcode == 99)
+                {
+                    return (outputParams, true, 0);
+                }
+
+                int skip = 0;
+                int val1 = 0;
+                int val2 = 0;
+                int address = 0;
+
+
+                switch (optcode)
+                {
+                    case 1:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+
+                        input[address] = val1 + val2;
+                        skip = 4;
+                        break;
+                    case 2:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+
+                        input[address] = val1 * val2;
+                        skip = 4;
+                        break;
+                    case 3:
+                        address = input[position + 1];
+                        input[address] = inputParam[paramCounter];
+                        paramCounter++;
+                        skip = 2;
+                        break;
+                    case 4:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        outputParams.Add(val1);
+                        return (outputParams, false, position + 2);
+                    case 5:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        if (val1 != 0)
+                        {
+                            position = val2;
+                            skip = 0;
+                        }
+                        else
+                            skip = 3;
+                        break;
+                    case 6:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        if (val1 == 0)
+                        {
+                            position = val2;
+                            skip = 0;
+                        }
+                        else
+                            skip = 3;
+                        break;
+                    case 7:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+                        input[address] = val1 < val2 ? 1 : 0;
+                        skip = 4;
+                        break;
+                    case 8:
+                        val1 = paramModes[0] == MemoryMode.Position ? input[input[position + 1]] : input[position + 1];
+                        val2 = paramModes[1] == MemoryMode.Position ? input[input[position + 2]] : input[position + 2];
+                        address = input[position + 3];
+                        input[address] = val1 == val2 ? 1 : 0;
+                        skip = 4;
+                        break;
+                    default:
+                        break;
+                }
+                position += skip;
+            }
+            throw new Exception();
+        }
+
+        #endregion
+
+
+        #region ROUND 08
+
+        private static int AdventOfCode2019_08_1(string input)
+        {
+            var wide = 25;
+            var tall = 6;
+
+            List<List<string>> layers = new List<List<string>>();
+            int tallCounter = 0;
+            while (tallCounter < input.Length - 1)
+            {
+                var layer = new List<string>();
+                for (int i = 0; i < tall; i++)
+                {
+                    layer.Add(input.Substring(tallCounter, wide));
+                    tallCounter += wide;
+                }
+                layers.Add(layer);
+            }
+
+            var minLayer = layers.OrderBy(l => l.Sum(lin => lin.ToList().Count(c => c == '0'))).First();
+            var numberOf1Digits = minLayer.Sum(l => l.Count(c => c == '1'));
+            var numberOf2Digits = minLayer.Sum(l => l.Count(c => c == '2'));
+
+
+            return numberOf1Digits * numberOf2Digits;
+        }
+
+        private static List<List<int>> AdventOfCode2019_08_2(string input)
+        {
+            var wide = 25;
+            var tall = 6;
+
+            List<List<string>> layers = new List<List<string>>();
+            int tallCounter = 0;
+            while (tallCounter < input.Length - 1)
+            {
+                var layer = new List<string>();
+                for (int i = 0; i < tall; i++)
+                {
+                    layer.Add(input.Substring(tallCounter, wide));
+                    tallCounter += wide;
+                }
+                layers.Add(layer);
+            }
+
+            List<List<int>> picture = new List<List<int>>();
+
+            for (int t = 0; t < tall; t++)
+            {
+                var pictureLine = new List<int>();
+                for (int w = 0; w < wide; w++)
+                {
+                    pictureLine.Add(CalculatePixel(w, t, layers));
+                }
+                picture.Add(pictureLine);
+            }
+
+
+
+            return picture;
+        }
+
+        private static int CalculatePixel(int wide, int tall, List<List<string>> layers)
+        {
+            foreach (var layer in layers)
+            {
+                var color = int.Parse(layer[tall][wide].ToString());
+                if (color == 0 || color == 1)
+                {
+                    return color;
+                }
+            }
+            return 2;
+        }
+
+        #endregion
+
+
         public static List<string> GetInputLines(string fileName)
         {
             string line;
             var result = new List<string>();
             // Read the file and display it line by line.  
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
+                new System.IO.StreamReader(@"..\..\..\inputs\" + fileName);
             while ((line = file.ReadLine()) != null)
             {
                 result.Add(line);
@@ -494,11 +907,21 @@ namespace AdventOfCode2019
             return result;
         }
 
+        public static string GetInputText(string fileName)
+        {
+            // Read the file and display it line by line.  
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(@"..\..\..\inputs\" + fileName);
+            var result = file.ReadToEnd();
+            // Suspend the screen.  
+            return result;
+        }
+
         public static List<T> GetInputCommaSeperated<T>(string fileName)
         {
             var result = new List<T>();
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
+                new System.IO.StreamReader(@"..\..\..\inputs\" + fileName);
             var text = file.ReadToEnd();
 
             file.Close();
@@ -514,7 +937,7 @@ namespace AdventOfCode2019
             var result = new List<List<string>>();
             // Read the file and display it line by line.  
             System.IO.StreamReader file =
-                new System.IO.StreamReader(@"..\..\inputs\" + fileName);
+                new System.IO.StreamReader(@"..\..\..\inputs\" + fileName);
 
             while ((line = file.ReadLine()) != null)
             {
