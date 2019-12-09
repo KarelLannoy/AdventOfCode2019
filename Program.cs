@@ -57,13 +57,21 @@ namespace AdventOfCode2019
             //Console.WriteLine($"{result1} - {result2}");
 
             // Round 08
-            var input = InputParser.GetInputText("Input08.txt");
-            var result1 = Day08.AdventOfCode2019_08_1(input);
-            Console.WriteLine(result1);
-            Day08.AdventOfCode2019_08_2(input);
-            
+            //var input = InputParser.GetInputText("Input08.txt");
+            //var result1 = Day08.AdventOfCode2019_08_1(input);
+            //Console.WriteLine(result1);
+            //Day08.AdventOfCode2019_08_2(input);
+
+
+            // Round 09
+            var input = InputParser.GetInputCommaSeperated<long>("input09.txt");
+            var result1 = Day09.AdventOfCode2019_09_1(input);
+            var result2 = Day09.AdventOfCode2019_09_2(input);
+            Console.WriteLine($"{result1} - {result2}");
 
             Console.ReadLine();
         }
+
+       
     }
 }
