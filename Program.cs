@@ -2,7 +2,9 @@
 using AdventOfCode2019.InputParsers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Linq;
 
 namespace AdventOfCode2019
@@ -64,14 +66,19 @@ namespace AdventOfCode2019
 
 
             // Round 09
-            var input = InputParser.GetInputCommaSeperated<long>("input09.txt");
-            var result1 = Day09.AdventOfCode2019_09_1(input);
-            var result2 = Day09.AdventOfCode2019_09_2(input);
+            //var input = InputParser.GetInputCommaSeperated<long>("input09.txt");
+            //var result1 = Day09.AdventOfCode2019_09_1(input);
+            //var result2 = Day09.AdventOfCode2019_09_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 10
+            var input = InputParser.GetInputLines("input10.txt");
+            var result1 = Day10.AdventOfCode2019_10_1(input);
+            var result2 = Day10.AdventOfCode2019_10_2(input);
             Console.WriteLine($"{result1} - {result2}");
 
             Console.ReadLine();
         }
-
-       
     }
 }
