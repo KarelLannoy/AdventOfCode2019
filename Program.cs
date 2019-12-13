@@ -7,6 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace AdventOfCode2019
 {
@@ -86,13 +87,23 @@ namespace AdventOfCode2019
             //Console.WriteLine(result1);
             //Day11.AdventOfCode2019_11_2(input);
 
+
             // Round 12
-            var input = InputParser.GetInputLines("input12.txt");
-            var result1 = Day12.AdventOfCode2019_12_1(input);
-            var result2 = Day12.AdventOfCode2019_12_2(input);
+            //var input = InputParser.GetInputLines("input12.txt");
+            //var result1 = Day12.AdventOfCode2019_12_1(input);
+            //var result2 = Day12.AdventOfCode2019_12_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 13
+            var input = InputParser.GetInputCommaSeperated<long>("input13.txt");
+            var result1 = Day13.AdventOfCode2019_13_1(input);
+            var result2 = Day13.AdventOfCode2019_13_2(input);
             Console.WriteLine($"{result1} - {result2}");
 
             Console.ReadLine();
         }
+
+        
     }
 }
