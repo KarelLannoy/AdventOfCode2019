@@ -96,9 +96,29 @@ namespace AdventOfCode2019
 
 
             // Round 13
-            var input = InputParser.GetInputCommaSeperated<long>("input13.txt");
-            var result1 = Day13.AdventOfCode2019_13_1(input);
-            var result2 = Day13.AdventOfCode2019_13_2(input);
+            //var input = InputParser.GetInputCommaSeperated<long>("input13.txt");
+            //var result1 = Day13.AdventOfCode2019_13_1(input);
+            //var result2 = Day13.AdventOfCode2019_13_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 14
+            //var input = InputParser.GetInputLines("input14.txt");
+            //var result1 = Day14.AdventOfCode2019_14_1(input);
+            //var result2 = Day14.AdventOfCode2019_14_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 15
+            //var input = InputParser.GetInputCommaSeperated<long>("input15.txt");
+            //var result1 = Day15.AdventOfCode2019_15_1(input);
+            //var result2 = Day15.AdventOfCode2019_15_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+            // Round 16
+            var input = InputParser.GetInputText("input16.txt");
+            var result1 = Day16.AdventOfCode2019_16_1(input);
+            var result2 = Day16.AdventOfCode2019_16_2(input);
             Console.WriteLine($"{result1} - {result2}");
 
             Console.ReadLine();
