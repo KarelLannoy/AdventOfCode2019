@@ -116,9 +116,16 @@ namespace AdventOfCode2019
             //Console.WriteLine($"{result1} - {result2}");
 
             // Round 16
-            var input = InputParser.GetInputText("input16.txt");
-            var result1 = Day16.AdventOfCode2019_16_1(input);
-            var result2 = Day16.AdventOfCode2019_16_2(input);
+            //var input = InputParser.GetInputText("input16.txt");
+            //var result1 = Day16.AdventOfCode2019_16_1(input);
+            //var result2 = Day16.AdventOfCode2019_16_2(input);
+            //Console.WriteLine($"{result1} - {result2}");
+
+
+            // Round 17
+            var input = InputParser.GetInputCommaSeperated<long>("input17.txt");
+            var result1 = Day17.AdventOfCode2019_17_1(input);
+            var result2 = Day17.AdventOfCode2019_17_2(input);
             Console.WriteLine($"{result1} - {result2}");
 
             Console.ReadLine();
